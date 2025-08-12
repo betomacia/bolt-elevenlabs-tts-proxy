@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Prueba TTS Proxy</title>
+  </head>
+  <body>
+    <h1>Prueba TTS Proxy (Base64)</h1>
+    <textarea id="txt" rows="4" cols="60">Hola desde el proxy de ElevenLabs</textarea><br/>
+    <button id="go">Generar</button>
+    <audio id="player" controls></audio>
+
+    <script>
+      document.getElementById('go').onclick = async () => {
+        const text = document.getElementById('txt').value;
+        const resp = await fetch('/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const data = await resp.json();
+        if (data.audio_base64) {
+          const bytes = Uint8Array.from(atob(data.audio_base64), c => c.charCodeAt(0));
+          const blob = new Blob([bytes], { type: data.mime || 'audio/mpeg' });
+          const url = URL.createObjectURL(blob);
+          const player = document.getElementById('player');
+          player.src = url;
+          player.play();
+        } else {
+          alert('Error: ' + JSON.stringify(data));
+        }
+      };
+    </script>
+  </body>
+</html>
