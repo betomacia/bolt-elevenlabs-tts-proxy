@@ -88,9 +88,14 @@ app.post('/tts', async (req, res) => {
   }
 });
 
+// Servir archivos estáticos en /public
 app.use('/public', express.static('public'));
+
+// Redirigir raíz a la página de prueba
+app.get('/', (req, res) => {
+  res.redirect('/public/test.html');
+});
 
 app.listen(PORT, () => {
   console.log(`TTS proxy escuchando en http://localhost:${PORT}`);
 });
-
